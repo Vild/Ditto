@@ -1,0 +1,4 @@
+[Project]
+Name=Ditto
+Manager=KDevCMakeManager
+VersionControl=kdevgit
