@@ -10,9 +10,13 @@ const int SCREEN_BPP = 32;
 const int SQUARE_WIDTH = 20;
 const int SQUARE_HEIGHT = 20;
 
+const int UPDATE_PER_SEC = 60;
+
 int x, y;
 int xVel, yVel;
 
+void ditto_render();
+void ditto_update();
 
 int init_GL()
 {
@@ -25,13 +29,11 @@ int init_GL()
   
   if (glGetError() != GL_NO_ERROR)
     return -1;
-  printf("1\n");
   return 0;
 }
 
 int ditto_init()
 {
-  printf("Hi from ditto_init()\n");
   x = 0;
   y = 0;
   xVel = 0;
@@ -54,10 +56,11 @@ void ditto_setTitle(char* text)
 
 void ditto_loop()
 {
-  printf("Hi from ditto_loop()\n");
   SDL_Event event;
   int quit = 0;
+  Uint32 t;
   while (!quit) {
+    t = SDL_GetTicks();
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT)
 	quit = 1;
@@ -74,20 +77,23 @@ void ditto_loop()
 	  case SDLK_DOWN: yVel -= SQUARE_HEIGHT / 2; break;
 	  case SDLK_LEFT: xVel += SQUARE_WIDTH / 2; break;
 	  case SDLK_RIGHT: xVel -= SQUARE_WIDTH / 2; break;
+	  case SDLK_ESCAPE: quit = 1;
 	}
       }
     }
     
-    ditto_move();
-    glClear(GL_COLOR_BUFFER_BIT);
-    ditto_show();
-    SDL_GL_SwapBuffers();
-    SDL_Delay(1000/60 /*TODO: TIME TOOK TO RENDER*/);
+    ditto_update();
+    
+    while (1000 / UPDATE_PER_SEC > (SDL_GetTicks() - t)) {
+      ditto_render();
+    }
   }
 }
 
-void ditto_show()
+void ditto_render()
 {
+  glClear(GL_COLOR_BUFFER_BIT);
+  
   glTranslatef(x, y, 0);
   glBegin(GL_QUADS);
     glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -97,9 +103,11 @@ void ditto_show()
     glVertex3f(0, SQUARE_HEIGHT, 0);
   glEnd();
   glLoadIdentity();
+  
+  SDL_GL_SwapBuffers();
 }
 
-void ditto_move()
+void ditto_update()
 {
   x += xVel;
   
@@ -113,6 +121,5 @@ void ditto_move()
 
 void ditto_destoy()
 {
-  printf("Hi from ditto_destory()\n");
   SDL_Quit();
 }

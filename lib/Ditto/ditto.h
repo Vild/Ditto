@@ -4,8 +4,6 @@
 int ditto_init();
 void ditto_setTitle(char * text);
 void ditto_loop();
-void ditto_show();
-void ditto_move();
 void ditto_destoy();
 
 #endif
