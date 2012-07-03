@@ -27,11 +27,11 @@ void setVSync(int interval)
     return; // Error: WGL_EXT_swap_control extension not supported on your computer.\n");
   else
   {
-#ifdef wglGetProcAddress
+#ifdef _WIN32 || _WIN64
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
 #else
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)glXGetProcAddress("glXSwapIntervalEXT");
-    
+
 #endif
     if( wglSwapIntervalEXT )
       wglSwapIntervalEXT(interval);
@@ -48,26 +48,26 @@ int init_GL()
   //glOrtho(0, screen_width, screen_height, 0, -1, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
+
   if (glGetError() != GL_NO_ERROR)
     return -1;
-  
+
   setVSync(0);
-  
+
   return 0;
 }
 
 int ditto_init(char * text, char * icon)
-{  
+{
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     return -1;
   if (SDL_SetVideoMode(screen_width, screen_height, SCREEN_BPP, SDL_OPENGL | SDL_RESIZABLE) == NULL)
     return -1;
   if (init_GL() != 0)
     return -1;
-  
+
   SDL_WM_SetCaption(text, icon);
-  
+
   return 0;
 }
 
@@ -77,10 +77,10 @@ void ditto_loop()
   Uint32 t;
   while (!quit) {
     t = SDL_GetTicks();
-    
+
     if (ditto_update(1))
       quit = 1;
-    
+
     while (1000 / UPDATE_PER_SEC > (SDL_GetTicks() - t)) {
       ditto_render();
       SDL_Delay(1);
@@ -94,12 +94,12 @@ void ditto_loop()
 void ditto_render()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glRotatef(-cameraAngle, 0.0f, 1.0f, 0.0f);
   glTranslatef(0.0f, 0.0f, -5.0f);
-  
+
   glPushMatrix();
   glTranslatef(0.0f, -1.0f, 0.0f);
   glRotatef(angel, 0.0f, 0.0f, 1.0f);
@@ -110,7 +110,7 @@ void ditto_render()
     glVertex3f(-0.4f, 0.5f, 0.0f);
   glEnd();
   glPopMatrix();
-  
+
   glPushMatrix();
   glTranslatef(1.0f, 1.0f, 0.0f);
   glRotatef(angel, 0.0f, 1.0f, 0.0f);
@@ -120,29 +120,29 @@ void ditto_render()
     glVertex3f(-0.5f, -0.5f, 0.0f);
     glVertex3f(0.5f, -0.5f, 0.0f);
     glVertex3f(-0.5f, 0.0f, 0.0f);
-    
+
     glVertex3f(-0.5f, 0.0f, 0.0f);
     glVertex3f(0.5f, -0.5f, 0.0f);
     glVertex3f(0.5f, 0.0f, 0.0f);
-    
+
     glVertex3f(-0.5f, 0.0f, 0.0f);
     glVertex3f(0.5f, 0.0f, 0.0f);
     glVertex3f(0.0f, 0.5f, 0.0f);
-    
+
   glEnd();
   glPopMatrix();
-  
+
   glPushMatrix();
   glTranslatef(-1.0f, 1.0f, 0.0f);
   glRotatef(angel, 1.0f, 2.0f, 3.0f);
-  glBegin(GL_TRIANGLES);  
+  glBegin(GL_TRIANGLES);
     //Triangle
     glVertex3f(0.5f, -0.5f, 0.0f);
     glVertex3f(0.0f, 0.5f, 0.0f);
     glVertex3f(-0.5f, -0.5f, 0.0f);
   glEnd();
   glPopMatrix();
-  
+
   SDL_GL_SwapBuffers();
 }
 
@@ -164,8 +164,8 @@ int ditto_update(int physics)
       } else if (event.type == SDL_VIDEORESIZE) {
 	screen_width = event.resize.w;
 	screen_height = event.resize.h;
-	
-	
+
+
 	SDL_SetVideoMode(screen_width, screen_height, SCREEN_BPP, SDL_OPENGL | SDL_RESIZABLE);
 	glViewport(0, 0, screen_width, screen_height);
 	glMatrixMode(GL_PROJECTION);
@@ -175,7 +175,7 @@ int ditto_update(int physics)
 	glLoadIdentity();
       }
     }
-  
+
   if (physics) {
     angel += 2.0f;
     if (angel > 360)

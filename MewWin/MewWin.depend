@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1341255929 source:d:\clonefish\ditto\src\mew\main.c
+	<stdio.h>
+	<stdlib.h>
+	"../lib/Ditto/ditto.h"
+

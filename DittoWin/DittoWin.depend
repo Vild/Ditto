@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1341357596 source:d:\clonefish\ditto\lib\ditto\ditto.c
+	"ditto.h"
+	<SDL/SDL.h>
+	<SDL/SDL_opengl.h>
+	<stdio.h>
+
+1341357522 d:\clonefish\ditto\lib\ditto\ditto.h
+
