@@ -1,8 +1,8 @@
 EXPORTS
-    SCREEN_BPP @1 DATA
-    UPDATE_PER_SEC @2 DATA
-    angel @3 DATA
-    cameraAngle @4 DATA
+    BOX_SIZE @1 DATA
+    SCREEN_BPP @2 DATA
+    UPDATE_PER_SEC @3 DATA
+    angle @4 DATA
     ditto_destoy @5
     ditto_init @6
     ditto_loop @7
@@ -10,7 +10,9 @@ EXPORTS
     ditto_update @9
     fov @10 DATA
     init_GL @11
-    screen_height @12 DATA
-    screen_width @13 DATA
-    setVSync @14
-    wglSwapIntervalEXT @15 DATA
+    loadTexture @12
+    screen_height @13 DATA
+    screen_width @14 DATA
+    setVSync @15
+    texture @16 DATA
+    wglSwapIntervalEXT @17 DATA
