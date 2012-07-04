@@ -40,12 +40,13 @@ void setVSync(int interval)
 
 int init_GL()
 {
-  glClearColor(0, 0, 0, 0);
-  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST); //Enable 3d
+  glEnable(GL_COLOR_MATERIAL); //Enable color
+  glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
+  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(fov, (double)screen_width/(double)screen_height, 1.0, 200.0);
-  //glOrtho(0, screen_width, screen_height, 0, -1, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -100,13 +101,20 @@ void ditto_render()
   glRotatef(-cameraAngle, 0.0f, 1.0f, 0.0f);
   glTranslatef(0.0f, 0.0f, -5.0f);
 
+  //glRotatef(angel, 0.1f, -0.1f, 1.0f); //ROTATE ALL
+  
   glPushMatrix();
   glTranslatef(0.0f, -1.0f, 0.0f);
   glRotatef(angel, 0.0f, 0.0f, 1.0f);
   glBegin(GL_QUADS);
+    //Trapezoid
+    glColor3f(0.5f, 0.0f, 0.8f);
     glVertex3f(-0.7f, -0.5f, 0.0f);
+    glColor3f(0.0f, 0.9f, 0.0f);
     glVertex3f(0.7f, -0.5f, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(0.4f, 0.5f, 0.0f);
+    glColor3f(0.0f, 0.65f, 0.65f);
     glVertex3f(-0.4f, 0.5f, 0.0f);
   glEnd();
   glPopMatrix();
@@ -116,6 +124,8 @@ void ditto_render()
   glRotatef(angel, 0.0f, 1.0f, 0.0f);
   glScalef(0.7f, 0.7f, 0.7f);
   glBegin(GL_TRIANGLES);
+    glColor3f(0.0f, 0.75f, 0.0f);
+    //glColor3f((angel < 120) ? angel/120 : 0.0f, (angel > 119 && angel < 240) ? (angel-120)/120 : 0.0f, (angel > 239 && angel < 360) ? (angel - 240)/120 : 0.0f);
     //Pentagon
     glVertex3f(-0.5f, -0.5f, 0.0f);
     glVertex3f(0.5f, -0.5f, 0.0f);
@@ -137,8 +147,11 @@ void ditto_render()
   glRotatef(angel, 1.0f, 2.0f, 3.0f);
   glBegin(GL_TRIANGLES);
     //Triangle
+    glColor3f(1.0f, 0.7f, 0.0f);
     glVertex3f(0.5f, -0.5f, 0.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
     glVertex3f(0.0f, 0.5f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
     glVertex3f(-0.5f, -0.5f, 0.0f);
   glEnd();
   glPopMatrix();
