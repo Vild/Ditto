@@ -202,7 +202,7 @@ int ditto_update(int physics)
 	}
       } else if (event.type == SDL_KEYUP) {
 	switch (event.key.keysym.sym) {
-	  case SDLK_f: (fov == 45.0f) ? fov = 80.0f : fov == 45.0f;
+	  case SDLK_f: (fov == 45.0f) ? fov = 80.0f : fov == 45.0f; break;
 	  case SDLK_ESCAPE: return 1;
 	  default: break;
 	}
