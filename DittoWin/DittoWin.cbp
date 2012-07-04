@@ -19,7 +19,7 @@
 					<Add option="-DBUILD_DLL" />
 				</Compiler>
 				<Linker>
-					<Add option="-lmingw32 -lSDLmain -lSDL -lglu32 -lopengl32" />
+					<Add option="-lmingw32 -lSDLmain -lSDL -lSDL_image -lglu32 -lopengl32" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -44,6 +44,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="..\lib\Ditto\ditto.h" />
+		<Unit filename="..\lib\Ditto\textureLoader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\lib\Ditto\textureLoader.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

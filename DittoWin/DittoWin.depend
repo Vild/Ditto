@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1341421678 source:d:\clonefish\ditto\lib\ditto\ditto.c
+1341421915 source:d:\clonefish\ditto\lib\ditto\ditto.c
 	"ditto.h"
 	"textureLoader.h"
 	<SDL/SDL.h>
