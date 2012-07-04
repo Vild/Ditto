@@ -1,5 +1,5 @@
-add_library(Ditto SHARED ditto.c)
+add_library(Ditto SHARED ditto.c textureLoader.c)
 target_link_libraries(Ditto ${SDL_LIBRARY})
 target_link_libraries(Ditto ${OPENGL_LIBRARY})
-#target_link_libraries(Ditto ${GLU_LIBRARY})
+target_link_libraries(Ditto ${SDLIMAGE_LIBRARY})
 install(TARGETS Ditto DESTINATION ${Ditto_BINARY_DIR}/bin)

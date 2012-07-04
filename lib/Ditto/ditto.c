@@ -1,4 +1,5 @@
 #include "ditto.h"
+#include "textureLoader.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <stdio.h>
@@ -10,8 +11,9 @@ const int SCREEN_BPP = 32;
 const int UPDATE_PER_SEC = 60;
 
 double fov = 45.0;
-float angel = 30.0f;
-float cameraAngle = 0.0f;
+const float BOX_SIZE = 7.0f;
+float angle = 0;
+GLuint texture;
 
 void ditto_render();
 int ditto_update(int physics);
@@ -40,9 +42,15 @@ void setVSync(int interval)
 
 int init_GL()
 {
-  glEnable(GL_DEPTH_TEST); //Enable 3d
-  glEnable(GL_COLOR_MATERIAL); //Enable color
-  glClearColor(0.7f, 0.9f, 1.0f, 1.0f);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_NORMALIZE);
+  glEnable(GL_ALPHA_TEST);
+  
+  glAlphaFunc(GL_GREATER, 0.5);
+  //glShadeModel(GL_SMOOTH);
   
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -68,6 +76,8 @@ int ditto_init(char * text, char * icon)
     return -1;
 
   SDL_WM_SetCaption(text, icon);
+  
+  texture = loadTexture("tex.png", 0);
 
   return 0;
 }
@@ -98,64 +108,85 @@ void ditto_render()
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glRotatef(-cameraAngle, 0.0f, 1.0f, 0.0f);
-  glTranslatef(0.0f, 0.0f, -5.0f);
-
-  //glRotatef(angel, 0.1f, -0.1f, 1.0f); //ROTATE ALL
   
-  glPushMatrix();
-  glTranslatef(0.0f, -1.0f, 0.0f);
-  glRotatef(angel, 0.0f, 0.0f, 1.0f);
+  glTranslatef(0.0f, 0.0f, -20.0f);
+  
+  GLfloat ambientLight[] = {0.3f, 0.3f, 0.3f, 1.0f};
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+  
+  GLfloat lightColor[] = {0.7f, 0.7f, 0.7f, 1.0f};
+  GLfloat lightPos[] = {-2 * BOX_SIZE, BOX_SIZE, 4 * BOX_SIZE, 1.0f};
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+  
+  glRotatef(-angle, 1.0f, 1.0f, 1.0f);
+  
   glBegin(GL_QUADS);
-    //Trapezoid
-    glColor3f(0.5f, 0.0f, 0.8f);
-    glVertex3f(-0.7f, -0.5f, 0.0f);
-    glColor3f(0.0f, 0.9f, 0.0f);
-    glVertex3f(0.7f, -0.5f, 0.0f);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.4f, 0.5f, 0.0f);
-    glColor3f(0.0f, 0.65f, 0.65f);
-    glVertex3f(-0.4f, 0.5f, 0.0f);
-  glEnd();
-  glPopMatrix();
-
-  glPushMatrix();
-  glTranslatef(1.0f, 1.0f, 0.0f);
-  glRotatef(angel, 0.0f, 1.0f, 0.0f);
-  glScalef(0.7f, 0.7f, 0.7f);
-  glBegin(GL_TRIANGLES);
-    glColor3f(0.0f, 0.75f, 0.0f);
-    //glColor3f((angel < 120) ? angel/120 : 0.0f, (angel > 119 && angel < 240) ? (angel-120)/120 : 0.0f, (angel > 239 && angel < 360) ? (angel - 240)/120 : 0.0f);
-    //Pentagon
-    glVertex3f(-0.5f, -0.5f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.0f);
-    glVertex3f(-0.5f, 0.0f, 0.0f);
-
-    glVertex3f(-0.5f, 0.0f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.0f);
-    glVertex3f(0.5f, 0.0f, 0.0f);
-
-    glVertex3f(-0.5f, 0.0f, 0.0f);
-    glVertex3f(0.5f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.5f, 0.0f);
-
-  glEnd();
-  glPopMatrix();
-
-  glPushMatrix();
-  glTranslatef(-1.0f, 1.0f, 0.0f);
-  glRotatef(angel, 1.0f, 2.0f, 3.0f);
-  glBegin(GL_TRIANGLES);
-    //Triangle
-    glColor3f(1.0f, 0.7f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.0f);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(0.0f, 0.5f, 0.0f);
+    //Top face
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glNormal3f(0.0, 1.0f, 0.0f);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    
+    //Bottom face
+    glColor3f(1.0f, 0.0f, 1.0f);
+    glNormal3f(0.0, -1.0f, 0.0f);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+    
+    //Left face
+    glNormal3f(-1.0, 0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 1.0f);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(-0.5f, -0.5f, 0.0f);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    
+    //Right face
+    glNormal3f(1.0, 0.0f, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
   glEnd();
-  glPopMatrix();
-
+  
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glBegin(GL_QUADS);
+    //Front face
+    glNormal3f(0.0, 0.0f, 1.0f);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, BOX_SIZE / 2);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, BOX_SIZE / 2);
+    
+    //Back face
+    glNormal3f(0.0, 0.0f, -1.0f);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(-BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(BOX_SIZE / 2, BOX_SIZE / 2, -BOX_SIZE / 2);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(BOX_SIZE / 2, -BOX_SIZE / 2, -BOX_SIZE / 2);
+  glEnd();
+  glDisable(GL_TEXTURE_2D);
+  
   SDL_GL_SwapBuffers();
 }
 
@@ -171,8 +202,9 @@ int ditto_update(int physics)
 	}
       } else if (event.type == SDL_KEYUP) {
 	switch (event.key.keysym.sym) {
-	  default: break;
+	  case SDLK_f: (fov == 45.0f) ? fov = 80.0f : fov == 45.0f;
 	  case SDLK_ESCAPE: return 1;
+	  default: break;
 	}
       } else if (event.type == SDL_VIDEORESIZE) {
 	screen_width = event.resize.w;
@@ -190,14 +222,15 @@ int ditto_update(int physics)
     }
 
   if (physics) {
-    angel += 2.0f;
-    if (angel > 360)
-      angel -=360;
+    angle += 1.5f;
+    if (angle > 360)
+      angle -= 360;
   }
   return 0;
 }
 
 void ditto_destoy()
 {
+  glDeleteTextures(1, &texture);
   SDL_Quit();
 }
